@@ -194,5 +194,5 @@
     plot(t,Y,'r',t,Z,'g',t,X,'b');              % 红色线最优化估算结果滤波后的值，%绿色线观测值，蓝色线预测值
     legend('Kalman滤波结果','观测值','预测值');
 
-[image](https://img-blog.csdn.net/20171024121938327)
-[image](https://img-blog.csdn.net/20171024121949050)
+[image](https://github.com/HuangBingjian/Kalman_Learning/blob/master/figure/kalman_learning_1.png)
+[image](https://github.com/HuangBingjian/Kalman_Learning/blob/master/figure/kalman_learning_2.png)
