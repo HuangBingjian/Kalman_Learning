@@ -146,42 +146,53 @@
 
 &emsp;&emsp;该系统的真实温度为25度，图中用黑线表示。图中红线是卡尔曼滤波器输出的最优化结果（该结果在算法中设置了Q=1e-6，R=1e-1）。
 
-××××××××××××××××××
+------
 
-&emsp;&emsp;附matlab下面的kalman滤波程序：
+&emsp;&emsp;附matlab下面的kalman滤波程序：（这里贴我自己的代码^_^）
+&emsp;&emsp;https://blog.csdn.net/u013165921/article/details/78328230
 
+    % Kalman滤波技术
 
-    clear
+    A=1;                                        % 状态转移矩阵 Φ(k)
+    H=0.2;                                      % 观测矩阵 H(k)
+    X(1)=0;                                     % 目标的状态向量 X(k)
+    % V(1)=0;                                   % 过程噪声 V(k)
+    Y(1)=1;                                     % 一步预测x(k)的更新 X(k+1|k+1)
+    P(1)=10;                                    % 一步预测的协方差 P(k)
     N=200;
-    w(1)=0;
-    w=randn(1,N)
-    x(1)=0;
-    a=1;
-    for k=2:N;
-    x(k)=a*x(k-1)+w(k-1);
+    V=randn(1,N);                               % 模拟产生过程噪声(高斯分布的随机噪声)
+    w=randn(1,N);                               % 模拟产生测量噪声
+
+    for k=2:N
+
+        X(k) = A * X(k-1)+V(k-1);               % 状态方程:X(k+1)=Φ(k)X(k)+G(k)V(k),其中G(k)=1
+
     end
 
-    V=randn(1,N);
-    q1=std(V);
-    Rvv=q1.^2;
-    q2=std(x);
-    Rxx=q2.^2; 
-    q3=std(w);
-    Rww=q3.^2;
-    c=0.2;
-    Y=c*x+V;
+    Q=std(V)^2;                                 % W(k)的协方差,std()函数用于计算标准偏差  
+    R=std(w)^2;                                 % V(k)的协方差 covariance
 
+    Z=H*X+w;                                    % 观测方程:Z(k+1)=H(k+1)X(k+1)+W(k+1),Z(k+1)是k+1时刻的观测值
 
-    p(1)=0;
-    s(1)=0;
-    for t=2:N;
-    p1(t)=a.^2*p(t-1)+Rww;
-    b(t)=c*p1(t)/(c.^2*p1(t)+Rvv);
-    s(t)=a*s(t-1)+b(t)*(Y(t)-a*c*s(t-1));
-    p(t)=p1(t)-c*b(t)*p1(t);
+    for t=2:N
+
+        P(t) = A * P(t-1)+Q;                    % 一步预测的协方差 P(k+1|k)   
+
+        S(t) = H.^2 * P(t)+R;                   % 观测向量的预测误差协方差 S(k+1)
+
+        K(t) = H * P(t)/S(t);                   % 卡尔曼滤波器增益 K(k+1) 
+
+        v(t) = Z(t) - ( A * H * Y(t-1) );       % 新息/量测残差 v(k+1)
+
+        Y(t)=A * Y(t-1) + K(t) * v(t);          % 状态更新方程 X(k+1|k+1)=X(k+1|k)+K(k+1)*v(k+1)
+
+        P(t)=(1-H * K(t)) * P(t);               % 误差协方差的更新方程: P(k+1|k+1)=(I-K(k+1)*H(k+1))*P(k+1|k)
     end
 
 
     t=1:N;
-    plot(t,s,'r',t,Y,'g',t,x,'b');
+    plot(t,Y,'r',t,Z,'g',t,X,'b');              % 红色线最优化估算结果滤波后的值，%绿色线观测值，蓝色线预测值
+    legend('Kalman滤波结果','观测值','预测值');
 
+[image](https://img-blog.csdn.net/20171024121938327)
+[image](https://img-blog.csdn.net/20171024121949050)
