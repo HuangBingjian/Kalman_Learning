@@ -1,18 +1,19 @@
                                                   科普：什么是卡尔曼滤波
 
-文章来源：http://bbs.loveuav.com/forum.php?mod=viewthread&tid=110
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;（文章来源：http://bbs.loveuav.com/forum.php?mod=viewthread&tid=110）</center> 
 
+1. 卡尔曼
 
 &emsp;&emsp;在学习卡尔曼滤波器之前，首先看看为什么叫“卡尔曼”。跟其他著名的理论（例如傅立叶变换，泰勒级数等等）一样，卡尔曼也是一个人的名字，而跟他们
 不同的是，他是个现代人！
 
 
-&emsp;&emsp;卡尔曼全名Rudolf Emil Kalman，匈牙利数学家，1930年出生于匈牙利首都布达佩斯。1953，1954年于麻省理工学院分别获得电机工程学士及硕士学位。1957年于哥伦比亚大学获得博士学位。我们现在要学习的卡尔曼滤波器，正是源于他的博士论文和1960年发表的论文《A New Approach to Linear Filtering and Prediction Problems》（线性滤波与预测问题的新方法）。如果对这编论文有兴趣，可以到这里的地址下载： http://www.cs.unc.edu/~welch/kalman/media/pdf/Kalman1960.pdf
+&emsp;&emsp;卡尔曼全名Rudolf Emil Kalman，匈牙利数学家，1930年出生于匈牙利首都布达佩斯。1953，1954年于麻省理工学院分别获得电机工程学士及硕士学位。1957年于哥伦比亚大学获得博士学位。我们现在要学习的卡尔曼滤波器，正是源于他的博士论文和1960年发表的论文《A New Approach to Linear Filtering and Prediction Problems》（线性滤波与预测问题的新方法）。如果对这编论文有兴趣，可以到这里的地址下载：http://www.cs.unc.edu/~welch/kalman/media/pdf/Kalman1960.pdf
 
 
 &emsp;&emsp;简单来说，卡尔曼滤波器是一个“optimal recursive data processing algorithm（最优化自回归数据处理算法）”。对于解决很大部分的问题，他是最优，效率最高甚至是最有用的。他的广泛应用已经超过30年，包括机器人导航，控制，传感器数据融合甚至在军事方面的雷达系统以及导弹追踪等等。近年来更被应用于计算机图像处理，例如头脸识别，图像分割，图像边缘检测等等。
 
-
+------
 2．卡尔曼滤波器的介绍
 （Introduction to the Kalman Filter）
 
@@ -43,7 +44,7 @@
 
 &emsp;&emsp;下面就要言归正传，讨论真正工程系统上的卡尔曼。
 
-
+------
 3． 卡尔曼滤波器算法
 （The Kalman Filter Algorithm）
 
@@ -53,11 +54,11 @@
 
 &emsp;&emsp;首先，我们先要引入一个离散控制过程的系统。该系统可用一个线性随机微分方程（Linear Stochastic Difference equation）来描述：
 
-&emsp;&emsp;&emsp;&emsp;X(k)=A X(k-1)+B U(k)+W(k) 
+>                                               X(k)=A X(k-1)+B U(k)+W(k) 
 
 &emsp;&emsp;再加上系统的测量值：
 
-&emsp;&emsp;&emsp;&emsp;Z(k)=H X(k)+V(k) 
+>                                               Z(k)=H X(k)+V(k) 
 
 &emsp;&emsp;上两式子中，X(k)是k时刻的系统状态，U(k)是k时刻对系统的控制量。A和B是系统参数，对于多模型系统，他们为矩阵。Z(k)是k时刻的测量值，H是测量系统的参数，对于多测量系统，H为矩阵。W(k)和V(k)分别表示过程和测量的噪声。他们被假设成高斯白噪声(White Gaussian Noise)，他们的covariance 分别是Q，R（这里我们假设他们不随系统状态变化而变化）。
 
@@ -67,30 +68,35 @@
 
 &emsp;&emsp;首先我们要利用系统的过程模型，来预测下一状态的系统。假设现在的系统状态是k，根据系统的模型，可以基于系统的上一状态而预测出现在状态：
 
-&emsp;&emsp;&emsp;&emsp;X(k|k-1)=A X(k-1|k-1)+B U(k) ……….. (1)
+>                                               X(k|k-1)=A X(k-1|k-1)+B U(k) ……….. (1)
 
 &emsp;&emsp;式(1)中，X(k|k-1)是利用上一状态预测的结果，X(k-1|k-1)是上一状态最优的结果，U(k)为现在状态的控制量，如果没有控制量，它可以为0。
 
 
 &emsp;&emsp;到现在为止，我们的系统结果已经更新了，可是，对应于X(k|k-1)的covariance还没更新。我们用P表示covariance：
 
-&emsp;&emsp;&emsp;&emsp;P(k|k-1)=A P(k-1|k-1) A’+Q ……… (2)
+>                                               P(k|k-1)=A P(k-1|k-1) A’+Q ……… (2)
 
 &emsp;&emsp;式(2)中，P(k|k-1)是X(k|k-1)对应的covariance，P(k-1|k-1)是X(k-1|k-1)对应的covariance，A’表示A的转置矩阵，Q是系统过程的covariance。式子1，2就是卡尔曼滤波器5个公式当中的前两个，也就是对系统的预测。
 
 
 &emsp;&emsp;现在我们有了现在状态的预测结果，然后我们再收集现在状态的测量值。结合预测值和测量值，我们可以得到现在状态(k)的最优化估算值X(k|k)：
 
-&emsp;&emsp;&emsp;&emsp;X(k|k)= X(k|k-1)+Kg(k) (Z(k)-H X(k|k-1)) ……… (3)
+
+>                                               X(k|k)= X(k|k-1)+Kg(k) (Z(k)-H X(k|k-1)) ……… (3)
+
 
 &emsp;&emsp;其中Kg为卡尔曼增益(Kalman Gain)：
 
-&emsp;&emsp;&emsp;&emsp;Kg(k)= P(k|k-1) H’ / (H P(k|k-1) H’ + R) ……… (4)
+
+>                                               Kg(k)= P(k|k-1) H’ / (H P(k|k-1) H’ + R) ……… (4)
 
 
 &emsp;&emsp;到现在为止，我们已经得到了k状态下最优的估算值X(k|k)。但是为了要另卡尔曼滤波器不断的运行下去直到系统过程结束，我们还要更新k状态下X(k|k)的covariance：
 
-&emsp;&emsp;&emsp;&emsp;P(k|k)=（I-Kg(k) H）P(k|k-1) ……… (5)
+
+>                                               P(k|k)=（I-Kg(k) H）P(k|k-1) ……… (5)
+
 
 &emsp;&emsp;其中I 为1的矩阵，对于单模型单测量，I=1。当系统进入k+1状态时，P(k|k)就是式子(2)的P(k-1|k-1)。这样，算法就可以自回归的运算下去。
 
@@ -110,20 +116,26 @@
 
 &emsp;&emsp;根据第二节的描述，把房间看成一个系统，然后对这个系统建模。当然，我们见的模型不需要非常地精确。我们所知道的这个房间的温度是跟前一时刻的温度相同的，所以A=1。没有控制量，所以U(k)=0。因此得出：
 
-&emsp;&emsp;&emsp;&emsp;X(k|k-1)=X(k-1|k-1) ……….. (6)
+
+>                                               X(k|k-1)=X(k-1|k-1) ……….. (6)
+
 
 &emsp;&emsp;式子（2）可以改成：
 
-&emsp;&emsp;&emsp;&emsp;P(k|k-1)=P(k-1|k-1) +Q ……… (7)
+
+>                                               P(k|k-1)=P(k-1|k-1) +Q ……… (7)
 
 
 &emsp;&emsp;因为测量的值是温度计的，跟温度直接对应，所以H=1。式子3，4，5可以改成以下：
 
-&emsp;&emsp;&emsp;&emsp;X(k|k)= X(k|k-1)+Kg(k) (Z(k)-X(k|k-1)) ……… (8)
 
-&emsp;&emsp;&emsp;&emsp;Kg(k)= P(k|k-1) / (P(k|k-1) + R) ……… (9)
+>                                               X(k|k)= X(k|k-1)+Kg(k) (Z(k)-X(k|k-1)) ……… (8)
 
-&emsp;&emsp;&emsp;&emsp;P(k|k)=（1-Kg(k)）P(k|k-1) ……… (10)
+
+>                                               Kg(k)= P(k|k-1) / (P(k|k-1) + R) ……… (9)
+
+
+>                                               P(k|k)=（1-Kg(k)）P(k|k-1) ……… (10)
 
 
 &emsp;&emsp;现在我们模拟一组测量值作为输入。假设房间的真实温度为25度，我模拟了200个测量值，这些测量值的平均值为25度，但是加入了标准偏差为几度的高斯白噪声（在图中为蓝线）。
@@ -138,38 +150,38 @@
 
 &emsp;&emsp;附matlab下面的kalman滤波程序：
 
-'''
-clear
-N=200;
-w(1)=0;
-w=randn(1,N)
-x(1)=0;
-a=1;
-for k=2:N;
-x(k)=a*x(k-1)+w(k-1);
-end
 
-V=randn(1,N);
-q1=std(V);
-Rvv=q1.^2;
-q2=std(x);
-Rxx=q2.^2; 
-q3=std(w);
-Rww=q3.^2;
-c=0.2;
-Y=c*x+V;
+    clear
+    N=200;
+    w(1)=0;
+    w=randn(1,N)
+    x(1)=0;
+    a=1;
+    for k=2:N;
+    x(k)=a*x(k-1)+w(k-1);
+    end
 
-
-p(1)=0;
-s(1)=0;
-for t=2:N;
-p1(t)=a.^2*p(t-1)+Rww;
-b(t)=c*p1(t)/(c.^2*p1(t)+Rvv);
-s(t)=a*s(t-1)+b(t)*(Y(t)-a*c*s(t-1));
-p(t)=p1(t)-c*b(t)*p1(t);
-end
+    V=randn(1,N);
+    q1=std(V);
+    Rvv=q1.^2;
+    q2=std(x);
+    Rxx=q2.^2; 
+    q3=std(w);
+    Rww=q3.^2;
+    c=0.2;
+    Y=c*x+V;
 
 
-t=1:N;
-plot(t,s,'r',t,Y,'g',t,x,'b');
-'''
+    p(1)=0;
+    s(1)=0;
+    for t=2:N;
+    p1(t)=a.^2*p(t-1)+Rww;
+    b(t)=c*p1(t)/(c.^2*p1(t)+Rvv);
+    s(t)=a*s(t-1)+b(t)*(Y(t)-a*c*s(t-1));
+    p(t)=p1(t)-c*b(t)*p1(t);
+    end
+
+
+    t=1:N;
+    plot(t,s,'r',t,Y,'g',t,x,'b');
+
